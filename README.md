@@ -1,5 +1,5 @@
 # android-OpenCV-SIFT
-此範例透過 Android Native C++ 與 OpenCV 4.5.1 來執行電腦視覺專案。將會以 2020 年開源的 SIFT 演算法來計算圖片的特徵點。
+This example implements a computer vision project with Android Native C++ and OpenCV 4.5.1. The feature points of the image will be calculated with the open source SIFT algorithm in 2020.
 
 ![](./screenshot/img14.png)
 
@@ -7,30 +7,33 @@
 [<img src="./screenshot/cover.jpg" width="550px">](https://youtu.be/rIu-mHX_MXM)
 
 ## Step 1: 建立專案
-開啟 Android Studio 建立一個以 Android Native C++ 為基底的專案。這一個選項他會建構一個 C/C++ 環境能夠透過 JNI (Java Native Interface) ，執行呼叫 C/C++ 語言的程式。
+Open Android Studio and create a project based on Android Native C++. This option will build a C/C++ environment that can execute programs calling C/C++ language through JNI (Java Native Interface).
 
 ![](./screenshot/img01.png)
 ![](./screenshot/img02.png)
 
-建立完成後我們可以將專案視窗改成 `Project` 的資料夾模式，以利後續操作。
+
+After the creation is complete, we can change the project window to the `Project` folder mode to facilitate subsequent operations.
 
 ![](./screenshot/img03.png)
 
 ## Step 2: 下載 OpenCV SDK
-進入 OpenCV [官網](https://opencv.org/releases/) 挑選版號本(此範例採用4.5.1)並下載 Android 版本。下載後進入 SDK 資料夾，找到 java 資料夾並將他改名成 `openCVLibrary451` (此動作是為了等等要匯入此資料夾，先將它命名完成)。說個題外話之前的版本匯入 java 資料夾時會系統自動將他改名成相對應版本號的 library，個人覺得是 Bug 因此要手動處理名稱較麻煩(未來應該會解決)。
+Enter the OpenCV [official website](https://opencv.org/releases/) to select the version version (this example uses 4.5.1) and download the Android version. After downloading, enter the SDK folder, find the java folder and rename it to `openCVLibrary451` (this action is to import this folder, name it first). To make a digression, when the previous version is imported into the java folder, the system will automatically rename it to the library of the corresponding version number. Personally, I think it is a bug, so it is troublesome to manually process the name (it should be resolved in the future).
 
 ![](./screenshot/img04.png)
 
 ## Step 3: 匯入 OpenCV SDK
-點選上方工具列 File > New > Import Module。選擇剛剛第二步驟已經改名後的 `openCVLibrary451` 資料夾，完成後點選下一步並按完成匯入。
+
+Click the upper toolbar File > New > Import Module. Select the `openCVLibrary451` folder that has been renamed in the second step, click Next and click Finish to import.
 
 ![](./screenshot/img05.png)
 
-匯入完成後可以看到 `openCVLibrary451` 在主目錄資料夾中，但是我們匯入的是要當作 module 使用並非 APP(下圖紅框)。因此我們要手動將它改成 library。(之前版本沒這問題4.3版本以後的問題有點多，但是為了展示最新版的SIFT API不得不使用)
+After the import is complete, you can see that `openCVLibrary451` is in the main directory folder, but what we import is to be used as a module rather than an APP (red box in the figure below). So we have to manually change it to library. (The previous version did not have this problem. There are a lot of problems after version 4.3, but in order to show the latest version of SIFT API, it has to be used)
 
 ![](./screenshot/img06.png)
 
-修改 `openCVLibrary451` 的 build.gradle。把 OpenCV 從 application 改成 library 才能 import。修改 `apply plugin: 'com.android.application'` ，把 `application` 改成 `library`。並且將 applicationId 刪除掉。刪除以下:
+
+Modify the build.gradle of `openCVLibrary451`. Change OpenCV from application to library to import. Modify `apply plugin: 'com.android.application'` and change `application` to `library`. And delete the applicationId. Delete the following:
 
 ```
 defaultConfig {
@@ -38,29 +41,32 @@ defaultConfig {
 }
 ```
 
-修改後build.gradle(openCVLibrary451)如下:
+
+The modified build.gradle (openCVLibrary451) is as follows:
 
 ![](./screenshot/img07.png)
 
 ## Step 4: dependencies加入OpenCV
-點選File > Project Structure ，進入 Project Structure 畫面，點選左邊 Dependencies 選項，Modules 選 app ，點 [+] 選 `3 Module Dependency`，如下圖:
+
+Click File > Project Structure to enter the Project Structure screen, click the Dependencies option on the left, select app for Modules, and click [+] to select `3 Module Dependency`, as shown below:
 
 ![](./screenshot/img08.png)
 
-點選剛剛稍早匯入的 `openCVLibrary451` module。點選 ok 後我們的專案就能成功使用 OpenCV 的函式庫囉。
+Click on the `openCVLibrary451` module that was just imported earlier. After clicking ok, our project can successfully use the OpenCV library.
 
 ![](./screenshot/img09.png)
 
-我們可以開啟 build.gradle(app) 來查看 `openCVLibrary451` 是否已經成功被匯入。
+We can open build.gradle(app) to see if `openCVLibrary451` has been imported successfully.
 
 ![](./screenshot/img10.png)
 
 ## Step 5: 新增Native Libraries
-將最早下載的 `\OpenCV-android-sdk\sdk\native\libs`中的 `armeabi-v7a` 與 `x86` 檔案複製到 `\app\libs` 下，常見通常都需要這兩個 CPU 類型。前者是現在手機目前主流架構 arm7，後者是給開發者在模擬器上除錯執行用。直到目前為止，Android 共有7種不同的 CPU 分別為 ARMv5，ARMv7（從2010年起）x86（從2011年起）MIPS（從2012年起）ARMv8，MIPS64 和 x86_64（從2014年起）。為了支援這些 CPU 我們就需要包相對應的 so 檔進 apk 裡。
+Copy the `armeabi-v7a` and `x86` files from `\OpenCV-android-sdk\sdk\native\libs` downloaded earlier to `\app\libs`, these two CPU types are usually required. The former is arm7, the current mainstream architecture of mobile phones, and the latter is for developers to debug and execute on the emulator. Until now, there are 7 different CPUs for Android which are ARMv5, ARMv7 (from 2010) x86 (from 2011) MIPS (from 2012) ARMv8, MIPS64 and x86_64 (from 2014). In order to support these CPUs, we need to package the corresponding so files into the apk.
 
 ![](./screenshot/img11.png)
 
-接下來指定 `jniLibs` 路徑，開啟 app 的 build.gradle，增加:
+
+Next, specify the `jniLibs` path, open the build.gradle of the app, and add:
 
 ```
 sourceSets{
@@ -73,7 +79,8 @@ sourceSets{
 ![](./screenshot/img12.png)
 
 ## activity_main.xml
-加入一個 `ImageView` 顯示 SIFT 特徵選取後的定位點結果。
+
+Add an `ImageView` to display the anchor point results after SIFT feature selection.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -109,8 +116,8 @@ sourceSets{
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-## 完整 MainActivity.java
-變數 `inputImage` 可以隨意替換 drawable 資料夾中的任一圖片。下一步驟教各位如何開啟資料夾並放自己的相片。
+## Complete MainActivity.java
+The variable `inputImage` can freely replace any image in the drawable folder. The next step will teach you how to open the folder and put your own photos.
 
 ```java
 import androidx.appcompat.app.AppCompatActivity;
@@ -173,18 +180,18 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
-## 加入測試圖片
-打開 app > src > main > res > drawable ，將測試圖片放到此資料夾中。
+## Add test image
+Open app > src > main > res > drawable and put the test picture into this folder.
 
 ![](./screenshot/img13.png)
 
-## 錯誤排除
+## Error exclusion
 
-如果編譯執行後發生以下錯誤訊息:
+If the following error message occurs after compiling and executing:
 
 > java.lang.UnsatisfiedLinkError: dlopen failed: library "libc++_shared.so" not found
 
-解決方式: 在build.gradle(app) 的 cmake 增加:
+Solution: Add in cmake of build.gradle(app):
 
 ```
 cmake {
