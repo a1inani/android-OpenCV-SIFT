@@ -6,24 +6,22 @@ This example implements a computer vision project with Android Native C++ and Op
 ## YouTube Tutorial
 [<img src="./screenshot/cover.jpg" width="550px">](https://youtu.be/rIu-mHX_MXM)
 
-## Step 1: 建立專案
+## Step 1: Create a project
 Open Android Studio and create a project based on Android Native C++. This option will build a C/C++ environment that can execute programs calling C/C++ language through JNI (Java Native Interface).
 
 ![](./screenshot/img01.png)
 ![](./screenshot/img02.png)
 
-
 After the creation is complete, we can change the project window to the `Project` folder mode to facilitate subsequent operations.
 
 ![](./screenshot/img03.png)
 
-## Step 2: 下載 OpenCV SDK
+## Step 2: Download the OpenCV SDK
 Enter the OpenCV [official website](https://opencv.org/releases/) to select the version version (this example uses 4.5.1) and download the Android version. After downloading, enter the SDK folder, find the java folder and rename it to `openCVLibrary451` (this action is to import this folder, name it first). To make a digression, when the previous version is imported into the java folder, the system will automatically rename it to the library of the corresponding version number. Personally, I think it is a bug, so it is troublesome to manually process the name (it should be resolved in the future).
 
 ![](./screenshot/img04.png)
 
-## Step 3: 匯入 OpenCV SDK
-
+## Step 3: Import OpenCV SDK
 Click the upper toolbar File > New > Import Module. Select the `openCVLibrary451` folder that has been renamed in the second step, click Next and click Finish to import.
 
 ![](./screenshot/img05.png)
@@ -31,7 +29,6 @@ Click the upper toolbar File > New > Import Module. Select the `openCVLibrary451
 After the import is complete, you can see that `openCVLibrary451` is in the main directory folder, but what we import is to be used as a module rather than an APP (red box in the figure below). So we have to manually change it to library. (The previous version did not have this problem. There are a lot of problems after version 4.3, but in order to show the latest version of SIFT API, it has to be used)
 
 ![](./screenshot/img06.png)
-
 
 Modify the build.gradle of `openCVLibrary451`. Change OpenCV from application to library to import. Modify `apply plugin: 'com.android.application'` and change `application` to `library`. And delete the applicationId. Delete the following:
 
@@ -46,8 +43,7 @@ The modified build.gradle (openCVLibrary451) is as follows:
 
 ![](./screenshot/img07.png)
 
-## Step 4: dependencies加入OpenCV
-
+## Step 4: Add dependencies to OpenCV
 Click File > Project Structure to enter the Project Structure screen, click the Dependencies option on the left, select app for Modules, and click [+] to select `3 Module Dependency`, as shown below:
 
 ![](./screenshot/img08.png)
@@ -60,11 +56,10 @@ We can open build.gradle(app) to see if `openCVLibrary451` has been imported suc
 
 ![](./screenshot/img10.png)
 
-## Step 5: 新增Native Libraries
+## Step 5: Add Native Libraries
 Copy the `armeabi-v7a` and `x86` files from `\OpenCV-android-sdk\sdk\native\libs` downloaded earlier to `\app\libs`, these two CPU types are usually required. The former is arm7, the current mainstream architecture of mobile phones, and the latter is for developers to debug and execute on the emulator. Until now, there are 7 different CPUs for Android which are ARMv5, ARMv7 (from 2010) x86 (from 2011) MIPS (from 2012) ARMv8, MIPS64 and x86_64 (from 2014). In order to support these CPUs, we need to package the corresponding so files into the apk.
 
 ![](./screenshot/img11.png)
-
 
 Next, specify the `jniLibs` path, open the build.gradle of the app, and add:
 
@@ -79,7 +74,6 @@ sourceSets{
 ![](./screenshot/img12.png)
 
 ## activity_main.xml
-
 Add an `ImageView` to display the anchor point results after SIFT feature selection.
 
 ```xml
@@ -186,7 +180,6 @@ Open app > src > main > res > drawable and put the test picture into this folder
 ![](./screenshot/img13.png)
 
 ## Error exclusion
-
 If the following error message occurs after compiling and executing:
 
 > java.lang.UnsatisfiedLinkError: dlopen failed: library "libc++_shared.so" not found
